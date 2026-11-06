@@ -32,6 +32,13 @@ local function Fill(f)
   f.slider:SetValue(value)
   f.value:SetText(("%d%%"):format(value))
   SpeakerIcon(f.icon, muted)
+  -- its look put back whole each time (unmuted: as after a reload, never left dimmed or pressed)
+  f.icon:SetDesaturated(false)
+  f.icon:SetVertexColor(1, 1, 1)
+  f.icon:SetAlpha(1)
+  f.icon:ClearAllPoints()
+  f.icon:SetPoint("CENTER", f.speaker, "CENTER", 0, 0)
+  f.speaker:SetButtonState("NORMAL")
   f.forbidden:SetShown(muted)
   f.filling = nil
 end
