@@ -67,14 +67,27 @@ local function Apply()
   db.sound, db.soundSet = next(saved) and saved or nil, next(set) and set or nil
 end
 
+-- The mute kept through the mode's own changes: the game turns its sound back on when some of its
+-- sound settings change (seen unticking the mode); for a second after them, it is put back off.
+local holdUntil = 0
+local function Now() return GetTime and GetTime() or 0 end
+local function HoldMute() if ns:Muted() then holdUntil = Now() + 1 end end
+local function KeepMute()
+  if holdUntil > Now() and not ns:Muted() then Set(ALL, "0") end
+end
+ns.KeepMute = KeepMute
+
 function ns:SetMode(on)
   if not self.db then return end
+  HoldMute()
   on = on and true or false
   self.db.mode = on or nil
   if on then Apply() else
     Restore()
     if self.WeaponsBack then self:WeaponsBack() end -- (the weapons the pole replaced: Fishing.lua)
   end
+  KeepMute()
+  if C_Timer and C_Timer.After then C_Timer.After(.3, function() KeepMute() Refresh() end) end
   Refresh()
 end
 
@@ -87,7 +100,7 @@ function ns:Muted() return Get(ALL) == "0" end
 
 function ns:SetVolume(percent)
   percent = max(0, min(100, floor((tonumber(percent) or 100) + .5)))
-  if self:Muted() and percent > 0 then Set(ALL, "1") end -- (moved to the right: the sound back)
+  if self:Muted() and percent > 0 then holdUntil = 0 Set(ALL, "1") end -- (moved to the right: the sound back)
   local value = Volume(percent / 100)
   for _, name in ipairs(EFFECTS) do
     if Get(name) ~= nil then
@@ -105,6 +118,7 @@ function ns:SetMuted(on)
     if self.db then self.db.lastVolume = self:Volume() end
     Set(ALL, "0")
   else
+    holdUntil = 0
     Set(ALL, "1")
     if self:Volume() == 0 then self:SetVolume(self.db and self.db.lastVolume or 100) return end
   end
@@ -126,12 +140,15 @@ events:SetScript("OnEvent", function(self, event, arg)
     EasyFishingDB.boost = nil -- (1.0.0's master volume boost, removed: given back by Restore at login)
   elseif event == "PLAYER_LOGIN" then
     self:UnregisterEvent("PLAYER_LOGIN")
+    HoldMute()
     Restore() -- (given back, should the game have closed in fishing mode)
     if ns:Mode() then Apply() end
+    KeepMute()
     Refresh()
   elseif event == "PLAYER_LOGOUT" then
     Restore() -- (the game saves its settings as they were: the mode put on again at the next login)
   elseif event == "CVAR_UPDATE" then
+    if arg == ALL then KeepMute() end
     Refresh() -- (Ctrl+S, the game's options: the menu's line follows)
   end
 end)

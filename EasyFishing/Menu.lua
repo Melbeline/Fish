@@ -9,12 +9,12 @@ local W, H = 128, 24
 local MEDIA = "Interface\\AddOns\\EasyFishing\\Media\\"
 local line
 
-local function Speaker(tex)
-  if C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo("voicechat-icon-speaker") then
-    tex:SetAtlas("voicechat-icon-speaker")
-  else
-    tex:SetTexture(MEDIA .. "Speaker")
-  end
+local function Has(atlas) return C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(atlas) ~= nil end
+-- The speaker: the game's own chat-frame speaker button (its dark square, the speaker with its waves; its
+-- speaker alone when muted, with a "forbidden" sign)
+local function SpeakerIcon(tex, muted)
+  local atlas = muted and "chatframe-button-icon-speaker-off" or "chatframe-button-icon-speaker-on"
+  if Has(atlas) then tex:SetAtlas(atlas) else tex:SetTexture(MEDIA .. "Speaker") end
 end
 
 local function Tip(self)
@@ -31,8 +31,7 @@ local function Fill(f)
   local value = muted and 0 or ns:Volume()
   f.slider:SetValue(value)
   f.value:SetText(("%d%%"):format(value))
-  f.icon:SetDesaturated(muted)
-  f.icon:SetAlpha(muted and .7 or 1)
+  SpeakerIcon(f.icon, muted)
   f.forbidden:SetShown(muted)
   f.filling = nil
 end
@@ -44,19 +43,22 @@ local function Line()
   f:SetSize(W, H)
   f:Hide()
   local speaker = CreateFrame("Button", nil, f)
-  speaker:SetSize(16, 16)
+  speaker:SetSize(22, 21) -- (the chat's 27 x 26, smaller: the menu's line)
   speaker:SetPoint("LEFT", f, "LEFT", 0, 0)
+  if Has("chatframe-button-up") then
+    speaker:SetNormalAtlas("chatframe-button-up")
+    speaker:SetPushedAtlas("chatframe-button-down")
+    speaker:SetHighlightAtlas("chatframe-button-highlight", "ADD")
+  end
   f.icon = speaker:CreateTexture(nil, "ARTWORK")
-  f.icon:SetAllPoints()
-  Speaker(f.icon)
-  local glow = speaker:CreateTexture(nil, "HIGHLIGHT")
-  glow:SetAllPoints()
-  Speaker(glow)
-  glow:SetBlendMode("ADD")
-  glow:SetAlpha(.5)
+  f.icon:SetSize(12, 12)
+  f.icon:SetPoint("CENTER", speaker, "CENTER", 0, 0)
+  SpeakerIcon(f.icon, false)
+  speaker:SetScript("OnMouseDown", function() f.icon:SetPoint("CENTER", speaker, "CENTER", -1, -1) end)
+  speaker:SetScript("OnMouseUp", function() f.icon:SetPoint("CENTER", speaker, "CENTER", 0, 0) end)
   f.forbidden = speaker:CreateTexture(nil, "OVERLAY")
-  f.forbidden:SetSize(12, 12)
-  f.forbidden:SetPoint("CENTER", speaker, "BOTTOMRIGHT", -1, 3)
+  f.forbidden:SetSize(11, 11)
+  f.forbidden:SetPoint("CENTER", speaker, "BOTTOMRIGHT", -4, 5)
   f.forbidden:SetTexture(MEDIA .. "Forbidden")
   f.forbidden:Hide()
   speaker.tip = function() return ns:Muted() and L.UNMUTE or L.MUTE end
@@ -73,7 +75,7 @@ local function Line()
   f.value:SetWidth(30)
   f.value:SetJustifyH("RIGHT")
   local slider = CreateFrame("Frame", nil, f, "MinimalSliderWithSteppersTemplate")
-  slider:SetPoint("LEFT", speaker, "RIGHT", 1, 0)
+  slider:SetPoint("LEFT", speaker, "RIGHT", 0, 0)
   slider:SetPoint("RIGHT", f.value, "LEFT", 0, 0)
   slider:SetHeight(H) -- (the template's 40 would reach over the entry below)
   if slider.Slider then -- the arrows closer in, for a longer track
