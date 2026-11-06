@@ -1,0 +1,15 @@
+## Interface: 16001
+## Title: Easy Fishing
+## Notes: One key to fish and reel in; a fishing mode and a sound volume in the portrait's menu.
+## Notes-frFR: Une touche pour pêcher et ferrer ; un mode pêche et le volume du son dans le menu du portrait.
+## Notes-deDE: Eine Taste zum Angeln und Einholen; Angelmodus und Lautstärke im Menü des Porträts.
+## Author: Melbeline
+## Version: 1.0.0
+## SavedVariables: EasyFishingDB
+## Category: Professions
+
+Locales.lua
+Mode.lua
+Fishing.lua
+Menu.lua
+Options.lua
