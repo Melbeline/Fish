@@ -45,3 +45,9 @@ SLASH_EASYFISHING2 = "/ef"
 SlashCmdList.EASYFISHING = function()
   if ns.category and Settings and Settings.OpenToCategory then Settings.OpenToCategory(ns.category:GetID()) end
 end
+
+-- /rl: the interface reloaded (as /reload)
+SLASH_EASYFISHINGRELOAD1 = "/rl"
+SlashCmdList.EASYFISHINGRELOAD = function()
+  if C_UI and C_UI.Reload then C_UI.Reload() else ReloadUI() end
+end
