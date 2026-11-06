@@ -15,6 +15,9 @@ local function Has(atlas) return C_Texture and C_Texture.GetAtlasInfo and C_Text
 local function SpeakerIcon(tex, muted)
   local atlas = muted and "chatframe-button-icon-speaker-off" or "chatframe-button-icon-speaker-on"
   if Has(atlas) then tex:SetAtlas(atlas) else tex:SetTexture(MEDIA .. "Speaker") end
+  -- the colour of the section's title (the game's gold)
+  local gold = NORMAL_FONT_COLOR
+  if gold and gold.GetRGB then tex:SetVertexColor(gold:GetRGB()) else tex:SetVertexColor(1, .82, 0) end
 end
 
 local function Tip(self)
