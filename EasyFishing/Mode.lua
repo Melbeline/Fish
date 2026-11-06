@@ -1,8 +1,7 @@
 -- Easy Fishing - fishing mode and the sound volume.
 -- Fishing mode: music, ambience, dialogue and the other voices off, reverb and distance filtering too, the
--- sound effects at the mode's volume (100 % unless changed with the slider while it is on), the master
--- volume louder (x2 by default, up to x10, never past 100 %) and the sound kept while the game is in the
--- background. All given back when it is turned off, and at each logout (put on again at the next login);
+-- sound effects at the mode's volume (100 % unless changed with the slider while it is on) and the sound
+-- kept while the game is in the background. All given back when it is turned off, and at each logout (put on again at the next login);
 -- a setting changed by the player meanwhile is left as it is.
 -- Mute: the game's own "Enable Sound" off (every sound, in the background too), as Ctrl+S does.
 
@@ -13,9 +12,7 @@ local OFF = { "Sound_EnableMusic", "Sound_EnableAmbience", "Sound_EnableDialog",
   "Sound_EnableEmoteSounds", "Sound_EnablePetSounds", "Sound_EnableReverb", "Sound_EnablePositionalLowPassFilter" }
 local ON = { "Sound_EnableSFX", "Sound_EnableGameplaySFX", "Sound_EnableSoundWhenGameIsInBG" }
 local EFFECTS = { "Sound_SFXVolume", "Sound_GameplaySFX" } -- (the second: later clients only)
-local MASTER, ALL = "Sound_MasterVolume", "Sound_EnableAllSound"
-ns.BOOST_MAX = 10
-local DEFAULT_BOOST = 2
+local ALL = "Sound_EnableAllSound"
 
 local function Get(name)
   if C_CVar and C_CVar.GetCVar then return C_CVar.GetCVar(name) end
@@ -32,12 +29,8 @@ local function Refresh() for _, fn in ipairs(ns.refresh) do pcall(fn) end end
 ns.Refresh = Refresh
 
 function ns:Mode() return self.db and self.db.mode == true end
-function ns:Boost()
-  local boost = self.db and tonumber(self.db.boost)
-  return boost and max(1, min(ns.BOOST_MAX, floor(boost + .5))) or DEFAULT_BOOST
-end
 function ns:ModeVolume() return self.db and tonumber(self.db.modeVolume) or 100 end
-function ns:ModeTip() return ns.L.MODE_TIP:format(self:ModeVolume(), self:Boost()) end
+function ns:ModeTip() return ns.L.MODE_TIP:format(self:ModeVolume()) end
 
 -- Given back: each setting as it was, unless the player changed it since
 local function Restore()
@@ -71,8 +64,6 @@ local function Apply()
   for _, name in ipairs(OFF) do Want(name, "0") end
   for _, name in ipairs(ON) do Want(name, "1") end
   for _, name in ipairs(EFFECTS) do Want(name, Volume(ns:ModeVolume() / 100)) end
-  local master = tonumber(Own(MASTER))
-  if master then Want(MASTER, Volume(min(1, master * ns:Boost()))) end
   db.sound, db.soundSet = next(saved) and saved or nil, next(set) and set or nil
 end
 
@@ -84,14 +75,6 @@ function ns:SetMode(on)
     Restore()
     if self.WeaponsBack then self:WeaponsBack() end -- (the weapons the pole replaced: Fishing.lua)
   end
-  Refresh()
-end
-
-function ns:SetBoost(boost)
-  if not self.db then return end
-  boost = max(1, min(ns.BOOST_MAX, floor((tonumber(boost) or DEFAULT_BOOST) + .5)))
-  self.db.boost = boost ~= DEFAULT_BOOST and boost or nil
-  if self:Mode() then Apply() end
   Refresh()
 end
 
@@ -140,6 +123,7 @@ events:SetScript("OnEvent", function(self, event, arg)
     self:UnregisterEvent("ADDON_LOADED")
     EasyFishingDB = type(EasyFishingDB) == "table" and EasyFishingDB or {}
     ns.db = EasyFishingDB
+    EasyFishingDB.boost = nil -- (1.0.0's master volume boost, removed: given back by Restore at login)
   elseif event == "PLAYER_LOGIN" then
     self:UnregisterEvent("PLAYER_LOGIN")
     Restore() -- (given back, should the game have closed in fishing mode)

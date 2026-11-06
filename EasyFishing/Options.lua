@@ -16,16 +16,21 @@ local function Register()
     options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, function(value) return ("%d%%"):format(value) end)
   end
   Settings.CreateSlider(category, volume, options)
-  local boost = Settings.RegisterProxySetting(category, "EASYFISHING_BOOST", VT.Number or "number", L.BOOST, 2,
-    function() return ns:Boost() end, function(value) ns:SetBoost(value) end)
-  options = Settings.CreateSliderOptions(1, ns.BOOST_MAX, 1)
-  if options.SetLabelFormatter and MinimalSliderWithSteppersMixin then
-    options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, function(value) return "×" .. value end)
-  end
-  Settings.CreateSlider(category, boost, options, L.BOOST_TIP)
   Settings.RegisterAddOnCategory(category)
   ns.category = category
+  ns.settings = { mode, volume }
 end
+
+-- Changed elsewhere (the portrait's menu, the game's audio options, Ctrl+S): the page follows
+local notifying
+table.insert(ns.refresh, function()
+  if notifying or not ns.settings then return end
+  notifying = true -- (the page's controls set the value back: once)
+  for _, setting in ipairs(ns.settings) do
+    if setting.NotifyUpdate then pcall(setting.NotifyUpdate, setting) end
+  end
+  notifying = false
+end)
 
 local events = CreateFrame("Frame")
 events:RegisterEvent("PLAYER_LOGIN")

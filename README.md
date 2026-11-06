@@ -9,10 +9,10 @@ A small fishing addon for WoW Forever (the game's own UI first; it uses only the
   - Pendant que la ligne est lancée, la même touche ferre le bouchon (la touche d'interaction du jeu) : une touche, une action.
   - Sans canne en main, le premier appui équipe celle des sacs. Les armes reviennent quand le mode pêche est désactivé.
 - **Clic droit sur le portrait**, section *Pêche* :
-  - **Mode pêche** coupe la musique, l'ambiance et les voix, met les effets sonores au volume choisi et le volume général ×2, et garde le son quand le jeu est en arrière-plan. Tout est remis comme avant en le désactivant.
+  - **Mode pêche** coupe la musique, l'ambiance et les voix, met les effets sonores au volume choisi et garde le son quand le jeu est en arrière-plan. Tout est remis comme avant en le désactivant.
   - **Haut-parleur** : un clic coupe tous les sons, y compris en arrière-plan. Le curseur passe tout à gauche et un panneau « interdit » s'affiche. Un nouveau clic, ou le curseur déplacé vers la droite, remet le son.
   - **Curseur** : le volume des effets sonores, de 0 à 100 %.
-- **Options** : Échap > Options > AddOns > Easy Fishing, ou `/easyfishing` (`/ef`). On y trouve le mode, le volume des effets et le volume général en mode pêche (×1 à ×10).
+- **Options** : Échap > Options > AddOns > Easy Fishing, ou `/easyfishing` (`/ef`). On y trouve le mode et le volume des effets sonores, liés au menu du portrait.
 
 **EN**
 - **One key to fish and reel in** (Esc > Options > Keybindings > Easy Fishing: *Fish / Reel in*).
