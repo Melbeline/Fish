@@ -15,9 +15,6 @@ local function Has(atlas) return C_Texture and C_Texture.GetAtlasInfo and C_Text
 local function SpeakerIcon(tex, muted)
   local atlas = muted and "chatframe-button-icon-speaker-off" or "chatframe-button-icon-speaker-on"
   if Has(atlas) then tex:SetAtlas(atlas) else tex:SetTexture(MEDIA .. "Speaker") end
-  -- the colour of the section's title (the game's gold)
-  local gold = NORMAL_FONT_COLOR
-  if gold and gold.GetRGB then tex:SetVertexColor(gold:GetRGB()) else tex:SetVertexColor(1, .82, 0) end
 end
 
 local function Tip(self)
@@ -47,7 +44,7 @@ local function Line()
   f:Hide()
   local speaker = CreateFrame("Button", nil, f)
   speaker:SetSize(22, 21) -- (the chat's 27 x 26, smaller: the menu's line)
-  speaker:SetPoint("LEFT", f, "LEFT", 0, 0)
+  speaker:SetPoint("LEFT", f, "LEFT", -2, 0) -- (a hair left: a gap before the slider's arrow)
   if Has("chatframe-button-up") then
     speaker:SetNormalAtlas("chatframe-button-up")
     speaker:SetPushedAtlas("chatframe-button-down")
@@ -78,7 +75,7 @@ local function Line()
   f.value:SetWidth(30)
   f.value:SetJustifyH("RIGHT")
   local slider = CreateFrame("Frame", nil, f, "MinimalSliderWithSteppersTemplate")
-  slider:SetPoint("LEFT", speaker, "RIGHT", 0, 0)
+  slider:SetPoint("LEFT", f, "LEFT", 23, 0)
   slider:SetPoint("RIGHT", f.value, "LEFT", 0, 0)
   slider:SetHeight(H) -- (the template's 40 would reach over the entry below)
   if slider.Slider then -- the arrows closer in, for a longer track
