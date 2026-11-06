@@ -12,7 +12,7 @@ A small fishing addon for WoW Forever (the game's own UI first; it uses only the
   - **Mode pêche** coupe la musique, l'ambiance et les voix, met les effets sonores au volume choisi et garde le son quand le jeu est en arrière-plan. Tout est remis comme avant en le désactivant.
   - **Haut-parleur** : un clic coupe tous les sons, y compris en arrière-plan. Le curseur passe tout à gauche et un panneau « interdit » s'affiche. Un nouveau clic, ou le curseur déplacé vers la droite, remet le son.
   - **Curseur** : le volume des effets sonores, de 0 à 100 %.
-- **Options** : Échap > Options > AddOns > Easy Fishing, ou `/easyfishing` (`/ef`). On y trouve le mode et le volume des effets sonores, liés au menu du portrait.
+- **Options** : Échap > Options > AddOns > Easy Fishing, ou `/easyfishing` (`/ef`). On y trouve le mode et le volume des effets sonores, liés au menu du portrait, et deux boutons : choisir la touche *Pêcher / Ferrer* (clic, puis la touche ou le bouton de souris voulu, avec Maj, Ctrl ou Alt si besoin ; Échap annule) et la supprimer.
 - `/rl` recharge l'interface (comme `/reload`).
 
 **EN**
@@ -24,6 +24,6 @@ A small fishing addon for WoW Forever (the game's own UI first; it uses only the
   - **Fishing mode**: the sound profile described above.
   - **Speaker**: mutes every sound, in the background too, with a "forbidden" sign. Click again, or move the slider right, to unmute.
   - **Slider**: the sound effects volume, 0–100 %.
-- **Options**: Esc > Options > AddOns > Easy Fishing, or `/easyfishing` (`/ef`). `/rl` reloads the interface (as `/reload`).
+- **Options**: Esc > Options > AddOns > Easy Fishing, or `/easyfishing` (`/ef`): the mode, the sound effects volume, and two buttons to set the *Fish / Reel in* key (click, then the key or mouse button, with Shift, Ctrl or Alt if wanted; Esc cancels) and to remove it. `/rl` reloads the interface (as `/reload`).
 
 Install: copy the `EasyFishing` folder into `World of Warcraft/_forever_/Interface/AddOns/`.

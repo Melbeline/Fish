@@ -55,8 +55,11 @@ local function SaveKeys()
   if SaveBindings then SaveBindings(GetCurrentBindingSet and GetCurrentBindingSet() or 1) end
 end
 
+-- The key with the modifiers held (Shift, Ctrl, Alt): the game's CreateKeyChordString only joins what it is
+-- given, its ...UsingMetaKeyState reads them
 local function Chord(key)
-  if CreateKeyChordString then return CreateKeyChordString(key) end
+  if not key then return end
+  if CreateKeyChordStringUsingMetaKeyState then return CreateKeyChordStringUsingMetaKeyState(key) end
   local parts = {}
   if IsAltKeyDown() then parts[#parts + 1] = "ALT" end
   if IsControlKeyDown() then parts[#parts + 1] = "CTRL" end
@@ -158,7 +161,7 @@ local function ButtonInitializer(name, text, click, tip)
   if CreateSettingsButtonInitializer then
     return CreateSettingsButtonInitializer(name, text, click, tip, true)
   elseif Settings.CreateElementInitializer then
-    return Settings.CreateElementInitializer("SettingsButtonControlTemplate",
+    return Settings.CreateElementInitializer("SettingButtonControlTemplate",
       { name = name, buttonText = text, buttonClick = click, tooltip = tip })
   end
 end
