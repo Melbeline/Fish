@@ -14,7 +14,15 @@ local function Has(atlas) return C_Texture and C_Texture.GetAtlasInfo and C_Text
 -- speaker alone when muted, with a "forbidden" sign)
 local function SpeakerIcon(tex, muted)
   local atlas = muted and "chatframe-button-icon-speaker-off" or "chatframe-button-icon-speaker-on"
-  if Has(atlas) then tex:SetAtlas(atlas) else tex:SetTexture(MEDIA .. "Speaker") end
+  -- the texture's look is set again in full at each change (a tint, a fade or a desaturation left over from
+  -- the previous state would otherwise stay: the icon came back dimmed after a mute then an unmute)
+  tex:SetDesaturated(false)
+  tex:SetVertexColor(1, 1, 1, 1)
+  tex:SetAlpha(1)
+  tex:SetBlendMode("BLEND")
+  tex:SetTexCoord(0, 1, 0, 1)
+  if Has(atlas) then tex:SetAtlas(atlas, false) else tex:SetTexture(MEDIA .. "Speaker") end
+  tex:SetDesaturated(false)
 end
 
 local function Tip(self)
@@ -32,14 +40,16 @@ local function Fill(f)
   f.slider:SetValue(value)
   f.value:SetText(("%d%%"):format(value))
   SpeakerIcon(f.icon, muted)
-  -- its look put back whole each time (unmuted: as after a reload, never left dimmed or pressed)
-  f.icon:SetDesaturated(false)
-  f.icon:SetVertexColor(1, 1, 1)
-  f.icon:SetAlpha(1)
-  f.icon:ClearAllPoints()
-  f.icon:SetPoint("CENTER", f.speaker, "CENTER", 0, 0)
-  f.speaker:SetButtonState("NORMAL")
   f.forbidden:SetShown(muted)
+  -- the button itself back to its resting look (a click leaves it in its pushed or disabled state)
+  local speaker = f.speaker
+  if speaker then
+    if speaker.Enable and not speaker:IsEnabled() then speaker:Enable() end
+    if not speaker:IsMouseOver() and speaker.SetButtonState then speaker:SetButtonState("NORMAL") end
+    speaker:SetAlpha(1)
+    f.icon:ClearAllPoints()
+    f.icon:SetPoint("CENTER", speaker, "CENTER", 0, 0)
+  end
   f.filling = nil
 end
 
