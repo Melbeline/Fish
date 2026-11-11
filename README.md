@@ -8,7 +8,7 @@ A small fishing addon for WoW Forever (the game's own UI first; it uses only the
   - Appuyer une fois lance la ligne.
   - Pendant que la ligne est lancée, la même touche ferre le bouchon (la touche d'interaction du jeu) : une touche, une action.
   - Sans canne en main, le premier appui équipe celle des sacs. Les armes reviennent quand le mode pêche est désactivé.
-- **Clic droit sur le portrait**, section *Pêche* :
+- **Clic droit sur le portrait**, section *Pêche*, en bas du menu (le jeu ne laisse un addon ajouter qu'après ses propres entrées) ; hors combat seulement (en combat, le jeu bloque les entrées des addons dans ce menu : Échap > Options et Ctrl+S restent là) :
   - **Mode pêche** coupe la musique, l'ambiance et les voix, met les effets sonores au volume choisi et garde le son quand le jeu est en arrière-plan. Tout est remis comme avant en le désactivant.
   - **Haut-parleur** : un clic coupe tous les sons, y compris en arrière-plan. Le curseur passe tout à gauche et un panneau « interdit » s'affiche. Un nouveau clic, ou le curseur déplacé vers la droite, remet le son.
   - **Curseur** : le volume des effets sonores, de 0 à 100 %.
@@ -20,7 +20,7 @@ A small fishing addon for WoW Forever (the game's own UI first; it uses only the
   - One press casts.
   - While the line is out, the same key reels in the bobber (the game's interact key).
   - Without a pole in hand, the first press equips the one in the bags.
-- **Portrait right-click**, *Fishing* section:
+- **Portrait right-click**, *Fishing* section, at the menu's end (the game lets an addon add only after its own entries); out of combat only (in combat the game blocks addons' entries in that menu: Esc > Options and Ctrl+S still work):
   - **Fishing mode**: the sound profile described above.
   - **Speaker**: mutes every sound, in the background too, with a "forbidden" sign. Click again, or move the slider right, to unmute.
   - **Slider**: the sound effects volume, 0–100 %.

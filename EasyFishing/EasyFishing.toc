@@ -4,7 +4,7 @@
 ## Notes-frFR: Une touche pour pêcher et ferrer ; un mode pêche et le volume du son dans le menu du portrait.
 ## Notes-deDE: Eine Taste zum Angeln und Einholen; Angelmodus und Lautstärke im Menü des Porträts.
 ## Author: Melbeline
-## Version: 1.0.8
+## Version: 1.0.9
 ## SavedVariables: EasyFishingDB
 ## Category: Professions
 

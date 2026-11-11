@@ -1,7 +1,11 @@
--- Easy Fishing - the portrait's right-click menu: a Fishing section just above the game's "Other Options":
--- the Fishing mode box, then one line: a speaker (click: every sound off, the slider to the left, a
--- "forbidden" sign on it; click again or move the slider right: the sound back) and the sound effects
--- volume slider, 0 to 100. The line is as narrow as the menu's own entries: the menu keeps its width.
+-- Easy Fishing - the portrait's right-click menu: a Fishing section at its end: the Fishing mode box, then
+-- one line: a speaker (click: every sound off, the slider to the left, a "forbidden" sign on it; click again
+-- or move the slider right: the sound back) and the sound effects volume slider, 0 to 100. The line is as
+-- narrow as the menu's own entries: the menu keeps its width.
+-- At the end: the game lets an addon add only after its own entries (one put higher, or one of the game's
+-- moved, rewrites the menu's own list from the addon's code: the game's entries moved are then refused what
+-- they do). Not in combat: the menu's buttons made for an addon's entries are refused their frame level then,
+-- and the game shows "Easy Fishing has been blocked"; the menu is the game's own until the fight ends.
 
 local _, ns = ...
 local L = ns.L
@@ -138,13 +142,12 @@ local function Part(fn)
 end
 
 local function AddEntries(_, root)
+  if InCombatLockdown() then return end
   if not (ns.db and root.CreateTitle and root.CreateCheckbox) then return end
-  local made = {}
-  local function Keep(description) if description then made[#made + 1] = description end return description end
-  Part(function() if root.CreateDivider then Keep(root:CreateDivider()) end end)
-  Part(function() Keep(root:CreateTitle(L.FISHING)) end)
+  Part(function() if root.CreateDivider then root:CreateDivider() end end)
+  Part(function() root:CreateTitle(L.FISHING) end)
   Part(function()
-    local box = Keep(root:CreateCheckbox(L.MODE, function() return ns:Mode() end, function() ns:SetMode(not ns:Mode()) end))
+    local box = root:CreateCheckbox(L.MODE, function() return ns:Mode() end, function() ns:SetMode(not ns:Mode()) end)
     if box and box.SetTooltip then
       box:SetTooltip(function(tooltip)
         GameTooltip_SetTitle(tooltip, L.MODE)
@@ -154,7 +157,7 @@ local function AddEntries(_, root)
   end)
   if MinimalSliderWithSteppersMixin and root.CreateFrame then
     Part(function()
-      local description = Keep(root:CreateFrame())
+      local description = root:CreateFrame()
       description:AddInitializer(function(frame)
         local f = Line()
         f:SetParent(frame)
@@ -173,29 +176,6 @@ local function AddEntries(_, root)
       end)
     end)
   end
-  -- above Other Options (its divider first): the menu's own list, reordered; else left at the end
-  Part(function()
-    local list = rawget(root, "elementDescriptions") or rawget(root, "elements")
-    if type(list) ~= "table" or #made == 0 then return end
-    local mine = {}
-    for _, d in ipairs(made) do mine[d] = true end
-    local rest = {}
-    for _, d in ipairs(list) do if not mine[d] then rest[#rest + 1] = d end end
-    local at
-    local other = UNIT_FRAME_DROPDOWN_SUBSECTION_TITLE_OTHER
-    for index, d in ipairs(rest) do
-      if other and MenuUtil.GetElementText(d) == other then
-        local previous = rest[index - 1]
-        at = (previous and MenuUtil.GetElementText(previous) == nil) and index - 1 or index
-        break
-      end
-    end
-    if not at then return end
-    for i = #list, 1, -1 do list[i] = nil end
-    for i = 1, at - 1 do list[#list + 1] = rest[i] end
-    for _, d in ipairs(made) do list[#list + 1] = d end
-    for i = at, #rest do list[#list + 1] = rest[i] end
-  end)
 end
 
 if Menu and Menu.ModifyMenu and MenuUtil then
