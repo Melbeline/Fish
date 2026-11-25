@@ -1,9 +1,12 @@
--- Easy Fishing - one key to fish: its key binding (Esc > Options > Keybindings > Easy Fishing) casts
--- Fishing; while the line is out, the same key is the game's own Interact Key (INTERACTTARGET), which
--- reels in the bobber the game picks (its soft interact target): one press, one action. While fishing,
--- the game's interact settings are set as its gamepad mode sets them, then given back. Without a pole
--- in hand, the key first equips the one in the bags; the weapons it replaced are put back when fishing
--- mode is turned off (Mode.lua).
+-- Clara Combo Points (the same file in Easy Fishing, the standalone addon) - one key to fish, with the keyboard and
+-- mouse (no gamepad mode): its key binding (Esc > Options > Keybindings > Clara Combo Points, or Easy Fishing: Fish /
+-- Reel in) casts Fishing; while
+-- the line is out, the same key is the game's own Interact Key (INTERACTTARGET), which reels in
+-- the bobber the game itself picks (its soft interact target): one press, one action, the moment
+-- left to the player. While fishing, the game's interact settings are set as its gamepad mode sets
+-- them (the interact key on for the keyboard too, 20 yards, an icon over the bobber), then given
+-- back. Without a fishing pole in hand, the key first equips the one in the bags (one press), the
+-- weapons it replaces kept and put back when fishing mode is turned off (FishingMode.lua).
 
 local ADDON, ns = ...
 local L = ns.L
@@ -19,9 +22,14 @@ local CVARS = {
   SoftTargetIconInteract = { value = "1" },
 }
 
+-- The key's button and its binding: Clara's, or the standalone Easy Fishing's (this file is shared with it, as it is:
+-- its Shell.lua names its own button, its Bindings.xml lists the binding)
+local BUTTON = ns.FISHING_BUTTON or "ClaraFishingButton"
+local ACTION = "CLICK " .. BUTTON .. ":LeftButton"
+if not ns.FISHING_BUTTON then BINDING_CATEGORY_CLARA = "Clara" end
+_G["BINDING_NAME_" .. ACTION] = L.FISH_BINDING
 
-
-local button = CreateFrame("Button", "EasyFishingButton", UIParent, "SecureActionButtonTemplate")
+local button = CreateFrame("Button", BUTTON, UIParent, "SecureActionButtonTemplate")
 button:RegisterForClicks("AnyUp", "AnyDown") -- (the game's template acts on one of them: one press, one cast)
 button:SetAttribute("type", "spell")
 button:Hide()
@@ -48,7 +56,7 @@ end
 ---------------------------------------------------------------------------
 -- The pole: without one in hand, the key equips the one in the bags (one press), the next press
 -- casts; the weapons it took the place of are kept, put back when fishing mode is turned off
--- (Mode.lua). Out of combat.
+-- (FishingMode.lua). Out of combat.
 ---------------------------------------------------------------------------
 local MAIN, OFF = 16, 17
 
@@ -74,7 +82,7 @@ local function Me() return UnitGUID("player") or "?" end
 
 local function Pole()
   if InCombatLockdown() then return end
-  if ns.weaponsLater then ns:WeaponsBack() end
+  if ns.fishingWeaponsLater then ns:FishingWeaponsBack() end
   if not fishingName then return end
   local inHand = IsPole(GetInventoryItemID("player", MAIN))
   local pole = not inHand and PoleInBags()
@@ -86,24 +94,24 @@ local function Pole()
     button:SetAttribute("macrotext", nil)
   end
   -- the pole just put on: the weapons it replaced, kept
-  local sv = ns.db
+  local sv = ns.sv
   if sv and inHand and held.main and not IsPole(held.main) then
-    sv.weapons = sv.weapons or {}
-    sv.weapons[Me()] = { main = held.main, off = held.off }
+    sv.fishingWeapons = sv.fishingWeapons or {}
+    sv.fishingWeapons[Me()] = { main = held.main, off = held.off }
   end
   held.main, held.off = GetInventoryItemLink("player", MAIN), GetInventoryItemLink("player", OFF)
 end
-ns.Pole = Pole
+ns.FishingPole = Pole
 
 -- The weapons back in hand (fishing mode turned off), the pole in the bags
-function ns:WeaponsBack()
-  local sv = self.db
-  local kept = sv and sv.weapons and sv.weapons[Me()]
+function ns:FishingWeaponsBack()
+  local sv = self.sv
+  local kept = sv and sv.fishingWeapons and sv.fishingWeapons[Me()]
   if not kept then return end
-  if InCombatLockdown() then self.weaponsLater = true return end -- (when the fight ends: Pole)
-  self.weaponsLater = nil
-  sv.weapons[Me()] = nil
-  if not next(sv.weapons) then sv.weapons = nil end
+  if InCombatLockdown() then self.fishingWeaponsLater = true return end -- (when the fight ends: Pole)
+  self.fishingWeaponsLater = nil
+  sv.fishingWeapons[Me()] = nil
+  if not next(sv.fishingWeapons) then sv.fishingWeapons = nil end
   if not IsPole(GetInventoryItemID("player", MAIN)) or not (C_Item and C_Item.EquipItemByName) then return end
   if kept.main then C_Item.EquipItemByName(kept.main, MAIN) end
   if kept.off then C_Timer.After(0.3, function()
@@ -128,22 +136,22 @@ end
 -- The game's settings for it, the former values kept (in the saved settings: given back at the
 -- next login should the game close meanwhile)
 local function Settings(on)
-  local sv = ns.db
+  local sv = ns.sv
   if not sv then return end
   if on then
-    sv.cvars = sv.cvars or {}
+    sv.fishingCVars = sv.fishingCVars or {}
     for name, want in pairs(CVARS) do
       local now = GetCVarValue(name)
       local lower = want.atLeast and tonumber(now) and tonumber(now) >= tonumber(want.value)
       if now ~= nil and tostring(now) ~= want.value and not lower then
-        if sv.cvars[name] == nil then sv.cvars[name] = tostring(now) end
+        if sv.fishingCVars[name] == nil then sv.fishingCVars[name] = tostring(now) end
         SetCVarValue(name, want.value)
       end
     end
-    if next(sv.cvars) == nil then sv.cvars = nil end
-  elseif sv.cvars then
-    for name, value in pairs(sv.cvars) do SetCVarValue(name, value) end
-    sv.cvars = nil
+    if next(sv.fishingCVars) == nil then sv.fishingCVars = nil end
+  elseif sv.fishingCVars then
+    for name, value in pairs(sv.fishingCVars) do SetCVarValue(name, value) end
+    sv.fishingCVars = nil
   end
 end
 
@@ -152,13 +160,13 @@ local function Reel(on)
   fishing = on
   ClearOverrideBindings(owner)
   if on then
-    for _, key in ipairs({ GetBindingKey("CLICK EasyFishingButton:LeftButton") }) do
+    for _, key in ipairs({ GetBindingKey(ACTION) }) do
       SetOverrideBinding(owner, true, key, "INTERACTTARGET")
     end
   end
   Settings(on)
 end
-ns.Reel = Reel
+ns.FishingReel = Reel
 
 local function IsFishing(spellID)
   if not (fishingName and spellID) or (issecretvalue and issecretvalue(spellID)) then return false end
@@ -166,14 +174,14 @@ local function IsFishing(spellID)
   return name == fishingName
 end
 
--- (clients with the interact key and soft targeting: WoW Forever)
+-- (WoW Forever only: its interact key and soft targeting)
 local events = CreateFrame("Frame")
 events:RegisterEvent("PLAYER_LOGIN")
 events:SetScript("OnEvent", function(self, event, _, _, spellID)
   if event == "PLAYER_LOGIN" then
     self:UnregisterEvent("PLAYER_LOGIN")
     Settings(false) -- (given back, should the game have closed while fishing)
-    if GetCVarValue("SoftTargetInteract") == nil then return end -- (a client with the interact key)
+    if not ns.FOREVER or not ns:QolRuns("fishing") then return end -- (the module off, or Easy Fishing runs)
     self:RegisterEvent("SPELLS_CHANGED")
     self:RegisterEvent("PLAYER_REGEN_DISABLED")
     self:RegisterEvent("PLAYER_LOGOUT")

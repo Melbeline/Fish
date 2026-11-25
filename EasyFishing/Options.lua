@@ -1,5 +1,6 @@
 -- Easy Fishing - its page in the game's options (Esc > Options > AddOns > Easy Fishing), and /easyfishing:
--- the fishing mode, the sound effects volume and two buttons: set the Fish / Reel in key, remove it
+-- the fishing mode, its master volume (×1 to ×10: FishingMode.lua) and two buttons: set the Fish / Reel in key,
+-- remove it
 local _, ns = ...
 local L = ns.L
 
@@ -186,14 +187,14 @@ local function Register()
   if not (Settings and Settings.RegisterVerticalLayoutCategory and Settings.RegisterProxySetting) then return end
   local VT = Settings.VarType or {}
   local category, layout = Settings.RegisterVerticalLayoutCategory(L.TITLE)
-  local mode = Settings.RegisterProxySetting(category, "EASYFISHING_MODE", VT.Boolean or "boolean", L.MODE, false,
-    function() return ns:Mode() end, function(value) ns:SetMode(value) end)
-  Settings.CreateCheckbox(category, mode, ns:ModeTip())
-  local volume = Settings.RegisterProxySetting(category, "EASYFISHING_VOLUME", VT.Number or "number", L.SFX, 100,
-    function() return ns:Muted() and 0 or ns:Volume() end, function(value) ns:SetVolume(value) end)
-  local options = Settings.CreateSliderOptions(0, 100, 5)
+  local mode = Settings.RegisterProxySetting(category, "EASYFISHING_MODE", VT.Boolean or "boolean", L.MENU_FISHING_MODE,
+    false, function() return ns:FishingMode() end, function(value) ns:SetFishingMode(value) end)
+  Settings.CreateCheckbox(category, mode, L.FISHING_MODE_TIP:format(ns:FishingBoost()))
+  local volume = Settings.RegisterProxySetting(category, "EASYFISHING_BOOST", VT.Number or "number", L.BOOST, 2,
+    function() return ns:FishingBoost() end, function(value) ns:SetFishingBoost(value) end)
+  local options = Settings.CreateSliderOptions(1, ns.FISHING_BOOST_MAX or 10, 1)
   if options.SetLabelFormatter and MinimalSliderWithSteppersMixin then
-    options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, function(value) return ("%d%%"):format(value) end)
+    options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, function(value) return ("×%d"):format(value) end)
   end
   Settings.CreateSlider(category, volume, options)
   local ok, err = pcall(AddKeyButton, category, layout)
@@ -203,7 +204,7 @@ local function Register()
   ns.settings = { mode, volume }
 end
 
--- Changed elsewhere (the portrait's menu, the game's audio options, Ctrl+S): the page follows
+-- Changed elsewhere (the portrait's menu, the professions window's Fishing card): the page follows
 local notifying
 table.insert(ns.refresh, function()
   if notifying or not ns.settings then return end
