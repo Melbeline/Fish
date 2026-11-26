@@ -43,3 +43,9 @@ key button) is Easy Fishing's own.
 - With Clara Combo Points: while Easy Fishing is enabled, it runs, and Clara's Fishing module stands aside.
 
 Install: copy the `EasyFishing` folder into `World of Warcraft/_forever_/Interface/AddOns/`.
+
+## 2.0.1
+
+- **Community fixes** (the same as Clara Combo Points', one copy running at a time): a community chat the game failed to join at the login joined again; the Guild & Communities window shows who is online in a community (the game's window never asked for its members' presence). Appear Offline on Battle.net still hides a player from the communities: the player's choice.
+
+- **Correctifs des communautés** (les mêmes que ceux de Clara Combo Points, une seule copie tourne à la fois) : un chat de communauté que le jeu n'a pas rejoint à la connexion est rejoint à nouveau ; la fenêtre Guilde & Communautés montre qui est en ligne dans une communauté (la fenêtre du jeu ne demandait jamais la présence de ses membres). « Apparaître hors ligne » sur Battle.net cache toujours un joueur des communautés : c'est son choix.

@@ -4,7 +4,7 @@
 ## Notes-frFR: Une touche pour pêcher et ferrer ; un mode pêche (celui de Clara Combo Points) dans le menu du portrait.
 ## Notes-deDE: Eine Taste zum Angeln und Einholen; ein Angelmodus (der von Clara Combo Points) im Menü des Porträts.
 ## Author: Melbeline
-## Version: 2.0.0
+## Version: 2.0.1
 ## SavedVariables: EasyFishingDB
 ## Category: Professions
 
@@ -14,3 +14,4 @@ Fishing.lua
 FishingMode.lua
 Menu.lua
 Options.lua
+CommunityFix.lua
